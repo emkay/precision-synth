@@ -15,6 +15,7 @@ setInterval(() => {
   navigator.geolocation.getCurrentPosition((position) => {
     const total = position.coords.latitude + position.coords.longitude
     const rng = seedrandom(total, {entropy: true})
+    const mm = rng().toFixed(0)
     const s = String(positive(rng()))
     const n = s.split('.')
       .join('')
@@ -22,7 +23,7 @@ setInterval(() => {
       .reduce((a, b) => {
         return Number(a) + Number(b)
       })
-    const note = notes[acceptableNumber(n)]
+    const note = [notes[acceptableNumber(n)], mm].join(':')
     console.log('note: ', note)
     noteStream.write(note)
   })

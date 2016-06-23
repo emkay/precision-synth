@@ -5,9 +5,12 @@ const context = require('./audio-context')
 const noteStream = Writable()
 noteStream._write = (n, enc, next) => {
   n = n.toString()
-  const note = new Octavian.Note(n)
-  const chord = note.toChord('major')
+  const splat = n.split(':')
+  const note = new Octavian.Note(splat[0])
+  const mm = splat[1] === 1 ? 'major' : 'minor'
+  const chord = note.toChord(mm)
 
+  console.log('chord: ', chord.signatures)
   chord.frequencies.forEach((frequency) => {
     const oscillator = context.createOscillator()
     const gain = context.createGain()
