@@ -24,6 +24,7 @@
     "standard": "^7.1.2"
   },
   "dependencies": {
-    "octavian": "^2.2.0"
+    "octavian": "^2.2.0",
+    "seedrandom": "^2.4.2"
   }
 }
