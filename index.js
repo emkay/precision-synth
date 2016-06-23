@@ -10,7 +10,7 @@ const toPlay = []
 
 setInterval(() => {
   function acceptableNumber (n) {
-    if (n <= 16) return n - 1
+    if (n <= notes.length) return n - 1
     return acceptableNumber(Math.floor(n / 2))
   }
 
