@@ -1,0 +1,29 @@
+{
+  "name": "precision-synth",
+  "version": "1.0.0",
+  "description": "geolocation based synth",
+  "main": "index.js",
+  "scripts": {
+    "dev": "budo index.js",
+    "test": "standard"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emkay/precision-synth.git"
+  },
+  "keywords": [],
+  "author": "Michael Matuzak",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/emkay/precision-synth/issues"
+  },
+  "homepage": "https://github.com/emkay/precision-synth#readme",
+  "devDependencies": {
+    "browserify": "^13.0.1",
+    "budo": "^8.3.0",
+    "standard": "^7.1.2"
+  },
+  "dependencies": {
+    "octavian": "^2.2.0"
+  }
+}
