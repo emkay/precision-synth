@@ -6,8 +6,6 @@ function positive (n) {
   return n < 0 ? -n : n
 }
 
-const toPlay = []
-
 setInterval(() => {
   function acceptableNumber (n) {
     if (n <= notes.length) return n - 1
