@@ -2,36 +2,58 @@ const Writable = require('stream').Writable
 const Octavian = require('octavian')
 const context = require('./audio-context')
 
-const noteStream = Writable()
+const noteStream = Writable({objectMode: true})
 noteStream._write = (n, enc, next) => {
-  n = n.toString()
-  const splat = n.split(':')
-  const note = new Octavian.Note(splat[0])
-  const mm = splat[1] === 1 ? 'major' : 'minor'
-  const chord = note.toChord(mm)
+  const no = [n.scale, n.octave].join('')
+  const oNote = new Octavian.Note(no)
+  console.log('oNote:', oNote)
+  console.log('interval: ', n.interval)
+  const note = n.interval !== '' ? oNote[n.interval]() : oNote
+  console.log('note: ', note)
+  const chord = n.isChord ? note.toChord(n.chordType) : false
+  console.log('chord: ', chord)
 
-  console.log('chord: ', chord.signatures)
-  chord.frequencies.forEach((frequency) => {
-    const oscillator = context.createOscillator()
-    const gain = context.createGain()
-    const volume = gain.gain
+  if (chord) {
+    chord.frequencies.forEach((freq) => {
+      playFreq(freq, n.instrumentType)
+      if (n.secondInstrumentType) playFreq(freq, n.secondInstrumentType)
+      if (n.thirdInstrumentType) playFreq(freq, n.thirdInstrumentType)
+    })
+  } else {
+    playFreq(note.frequency, n.instrumentType)
+    if (n.secondInstrumentType) playFreq(note.frequency, n.secondInstrumentType)
+    if (n.thirdInstrumentType) playFreq(note.frequency, n.thirdInstrumentType)
+  }
 
-    function play (freq) {
-      oscillator.frequency.value = freq
-      volume.value = 1
-      oscillator.connect(gain)
-      gain.connect(context.destination)
-      oscillator.start(0)
-    }
-
-    function pause () {
-      volume.value = 0
-    }
-
-    play(frequency)
-    setTimeout(pause, 500)
-  })
   next()
+}
+
+function playFreq (frequency, instrument) {
+  const oscillator = context.createOscillator()
+  // const biquadFilter = context.createBiquadFilter()
+  const gain = context.createGain()
+  const volume = gain.gain
+
+  function play (freq) {
+    oscillator.frequency.value = freq
+    oscillator.type = instrument
+    volume.value = 1
+    oscillator.connect(gain)
+    // biquadFilter.connect(gain)
+    gain.connect(context.destination)
+    oscillator.start()
+
+    // biquadFilter.type = 'lowshelf'
+    // biquadFilter.frequency.value = 1000
+    // biquadFilter.gain.value = 25
+  }
+
+  function pause () {
+    oscillator.stop()
+  }
+
+  play(frequency)
+  setTimeout(pause, 500)
 }
 
 module.exports = noteStream
