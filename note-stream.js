@@ -15,12 +15,12 @@ noteStream._write = (n, enc, next) => {
 
   if (chord) {
     chord.frequencies.forEach((freq) => {
-      playFreq(freq, n.instrumentType)
+      playFreq(freq, n.instrumentType, n.filterFreq, n.filterType)
       if (n.secondInstrumentType) playFreq(freq, n.secondInstrumentType)
       if (n.thirdInstrumentType) playFreq(freq, n.thirdInstrumentType)
     })
   } else {
-    playFreq(note.frequency, n.instrumentType)
+    playFreq(note.frequency, n.instrumentType, n.filterFreq, n.filterType)
     if (n.secondInstrumentType) playFreq(note.frequency, n.secondInstrumentType)
     if (n.thirdInstrumentType) playFreq(note.frequency, n.thirdInstrumentType)
   }
@@ -28,9 +28,12 @@ noteStream._write = (n, enc, next) => {
   next()
 }
 
-function playFreq (frequency, instrument) {
+function playFreq (frequency, instrument, filterFreq, filterType) {
+  filterFreq = filterFreq || 0
+  filterType = filterType || 'lowshelf'
+  console.log('filterFreq: ', filterFreq, filterType)
   const oscillator = context.createOscillator()
-  // const biquadFilter = context.createBiquadFilter()
+  const biquadFilter = context.createBiquadFilter()
   const gain = context.createGain()
   const volume = gain.gain
 
@@ -38,14 +41,14 @@ function playFreq (frequency, instrument) {
     oscillator.frequency.value = freq
     oscillator.type = instrument
     volume.value = 1
-    oscillator.connect(gain)
-    // biquadFilter.connect(gain)
+    oscillator.connect(biquadFilter)
+    biquadFilter.connect(gain)
     gain.connect(context.destination)
     oscillator.start()
 
-    // biquadFilter.type = 'lowshelf'
-    // biquadFilter.frequency.value = 1000
-    // biquadFilter.gain.value = 25
+    biquadFilter.type = filterType
+    biquadFilter.frequency.value = filterFreq
+    biquadFilter.gain.value = 25
   }
 
   function pause () {

@@ -62,6 +62,21 @@ function getInstrument (n) {
   return instruments[acceptableNumber(i, 4)]
 }
 
+function getFilterType (n) {
+  const filters = [
+    'lowpass',
+    'highpass',
+    'lowshelf',
+    'highshelf',
+    'allpass'
+  ]
+
+  const rng = seedrandom(n)
+  const i = String(rng().toFixed(1)).split('.')[1]
+  console.log(filters[acceptableNumber(i, 5)])
+  return filters[acceptableNumber(i, 5)]
+}
+
 setInterval(() => {
   navigator.geolocation.getCurrentPosition((position) => {
     const lat = position.coords.latitude
@@ -83,6 +98,8 @@ setInterval(() => {
     const instrumentType = getInstrument(latDigits[5])
     const secondInstrumentType = getInstrument(lonDigits[6])
     const thirdInstrumentType = getInstrument(latDigits[7])
+    const filterFreq = acceptableNumber(latDigits[6] * 100, 1000)
+    const filterType = getFilterType(latDigits[6])
 
     /*
     console.log('scale: ', scale)
@@ -101,7 +118,9 @@ setInterval(() => {
       secondChordType,
       instrumentType,
       secondInstrumentType,
-      thirdInstrumentType
+      thirdInstrumentType,
+      filterFreq,
+      filterType
     }
 
     noteStream.write(note)
